@@ -222,6 +222,97 @@ Observe → Think → Act → Observe → Think → Act → ...
 
 ---
 
+### AI Memory Systems
+
+**What it is:** Persistent storage that lets AI agents remember context across conversations. Without memory, every conversation starts from zero — the agent has no idea who you are, what you're working on, or what you told it yesterday.
+
+**How it started:** Early AI chat tools were stateless — each conversation was isolated. Users found themselves repeating the same context ("I'm working on a Python project...", "Use tabs not spaces...") every single time. Memory systems emerged to solve this.
+
+**How it evolved:**
+- 2023: No memory. Copy-paste context manually every session.
+- 2024: Basic conversation history. Some tools remember recent chats.
+- 2025: Structured persistent memory. Claude Code introduces file-based memory with types and indexing.
+- 2026: Memory is a core part of the agent workflow — project context, user preferences, cross-session decisions all persist.
+
+**How Claude Code Memory Works:**
+
+```
+~/.claude/projects/<project-hash>/memory/
+├── MEMORY.md              ← Index file (always loaded into context)
+├── user_role.md           ← Who you are, your expertise
+├── feedback_testing.md    ← "Don't mock the database" (learned preference)
+├── project_auth.md        ← "Auth rewrite driven by compliance, not tech debt"
+└── reference_linear.md    ← "Bugs tracked in Linear project INGEST"
+```
+
+**The architecture:**
+```
+You say something → Claude checks: is this worth remembering?
+                  → Claude checks: do I have relevant memories for this task?
+
+MEMORY.md (index) is ALWAYS loaded into the conversation context.
+Individual memory files are read when relevant.
+
+Memory is scoped per project directory:
+  ~/projectA/ → has its own memories
+  ~/projectB/ → has its own memories
+  Global ~/.claude/CLAUDE.md → applies everywhere
+```
+
+**Memory types and when each matters:**
+
+| Type | What It Stores | Example |
+|------|---------------|---------|
+| **user** | Your role, expertise, preferences | "Senior backend dev, new to React" |
+| **feedback** | Corrections and confirmed approaches | "Don't summarize at end of responses" |
+| **project** | Ongoing work context, decisions, deadlines | "Auth rewrite driven by legal/compliance" |
+| **reference** | Pointers to external resources | "Bugs tracked in Linear project INGEST" |
+
+**What memory is NOT:**
+- Not a database (it's markdown files)
+- Not conversation history (it's distilled insights, not transcripts)
+- Not code documentation (that belongs in the codebase)
+- Not a replacement for CLAUDE.md (CLAUDE.md is for the project, memory is for the relationship between you and the agent)
+
+**The relationship between CLAUDE.md and Memory:**
+
+```
+CLAUDE.md:
+  - Lives IN the repo (committed, shared with team)
+  - Project-level instructions (build commands, conventions, patterns)
+  - Anyone using Claude Code on this repo benefits
+  - You write it explicitly
+
+Memory:
+  - Lives OUTSIDE the repo (~/.claude/projects/)
+  - Personal context (your role, preferences, past decisions)
+  - Only YOU benefit (it's your agent's memory of working with you)
+  - Claude writes it (with your input), persists across conversations
+```
+
+**Is it useful?** Extremely. The difference between an agent with memory and one without is the difference between a colleague who's worked with you for months and a contractor on their first day. Memory is what makes the agent feel like it "knows" your project.
+
+**How to use it strategically:**
+
+1. **Explicitly tell Claude to remember important decisions:**
+   "Remember that we chose event sourcing for the order service because of audit requirements."
+
+2. **Correct the agent and it sticks:**
+   "Don't use class components in this project." → saved as feedback → never happens again.
+
+3. **Front-load context at the start of a project:**
+   Spend 5 minutes telling Claude about the project, your role, the team structure, key decisions. This investment pays off across every future conversation.
+
+4. **Ask Claude to recall:**
+   "What do you remember about the auth migration?" → Claude reads relevant memory files.
+
+5. **Audit and clean up periodically:**
+   Memory can go stale. Projects change. Decisions get reversed. Review memory files monthly.
+
+**How to invent your own norms:** Decide what's "memory-worthy" for your workflow. Some people save everything. Others save only corrections and key decisions. The right answer depends on how often you switch between projects and how much context you lose between sessions.
+
+---
+
 ### Vibe Coding
 
 **What it is:** A term coined by Andrej Karpathy in early 2025 describing a coding style where you "give in to the vibes" — describing what you want in natural language and letting the AI figure out implementation details.

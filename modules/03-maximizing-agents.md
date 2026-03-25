@@ -68,15 +68,95 @@ A great CLAUDE.md turns a generic AI agent into a team-specific coding partner.
 - Adding a web page: use `packages/web/src/app/` App Router conventions
 ```
 
-### Memory System
+### Memory System — Practical Playbook
 
-Claude Code maintains persistent memory between conversations. Use it for:
-- Your role and expertise level
-- Feedback on agent behavior (what to do/avoid)
-- Project context that isn't in code (deadlines, team decisions)
-- External resource locations
+Claude Code maintains persistent memory between conversations in `~/.claude/projects/<project>/memory/`. This is your highest-leverage tool for agent consistency across sessions.
 
-**Pro tip:** After a productive session, explicitly tell Claude "Remember that X approach worked well for Y" — this gets saved and improves future sessions.
+**The memory architecture:**
+```
+~/.claude/projects/<project-hash>/memory/
+├── MEMORY.md          ← Index (always in context, keep under 200 lines)
+├── user_*.md          ← Who you are (role, expertise, preferences)
+├── feedback_*.md      ← Corrections & confirmed approaches
+├── project_*.md       ← Decisions, context, ongoing work
+└── reference_*.md     ← Pointers to external systems
+```
+
+**Each memory file has frontmatter:**
+```markdown
+---
+name: Auth migration decision
+description: Why we chose event sourcing for orders — compliance-driven, not tech debt
+type: project
+---
+
+We chose event sourcing for the order service because legal requires
+a complete audit trail of all order state changes.
+
+**Why:** Compliance requirement from legal team, not a technical preference.
+**How to apply:** When making order-service architecture decisions, prioritize
+auditability over simplicity.
+```
+
+**What to save (and what not to):**
+
+| Save | Don't Save |
+|------|------------|
+| Your role and expertise level | Code patterns (derivable from codebase) |
+| "Don't mock the database" (corrections) | Git history (use `git log`) |
+| "Bundled PRs worked well here" (confirmed approaches) | Fix recipes (the fix is in the code) |
+| "Auth rewrite driven by compliance" (project context) | Anything already in CLAUDE.md |
+| "Bugs tracked in Linear project X" (external references) | Temporary/in-progress work details |
+
+**Strategic memory patterns:**
+
+**Pattern 1: The Day-One Dump**
+First time using Claude Code on a project? Spend 5 minutes front-loading context:
+```
+Remember these things about this project:
+- I'm a backend engineer, new to this codebase
+- This is a fintech app, compliance matters more than speed
+- The legacy/ folder is being phased out — never add to it
+- Tests marked @slow hit real databases
+- Bugs go in Linear project "PAYMENTS"
+- Team lead is Sarah, she reviews all auth-related PRs
+```
+
+**Pattern 2: The Correction Loop**
+When Claude does something wrong, correct it AND make it stick:
+```
+Don't use try-catch for expected errors in this project — we use the Result pattern.
+Remember this for future conversations.
+```
+This becomes a feedback memory. Claude won't make the same mistake next session.
+
+**Pattern 3: The Cross-Session Bridge**
+At the end of a long session with important decisions:
+```
+Remember what we decided today:
+- API pagination uses cursor-based, not offset-based
+- Rate limiting will be per-API-key, not per-IP
+- We're deferring the caching layer until after launch
+```
+
+**Pattern 4: The Recall Check**
+Start a new session by asking what Claude remembers:
+```
+What do you remember about this project and my preferences?
+```
+If something's missing or outdated, correct it on the spot.
+
+**Memory vs. CLAUDE.md — decision guide:**
+```
+Is this about the project (for everyone)?  → CLAUDE.md
+Is this about YOU or YOUR decisions?       → Memory
+Is this a build command or convention?     → CLAUDE.md
+Is this a preference or correction?        → Memory
+Should it be committed to git?             → CLAUDE.md
+Is it personal to your workflow?           → Memory
+```
+
+**Maintenance:** Review memory files monthly. Projects evolve. Decisions get reversed. Stale memory is worse than no memory — it makes the agent confidently wrong.
 
 ### Git Hooks & CI Integration
 
