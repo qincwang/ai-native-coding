@@ -28,6 +28,7 @@ AI-native coding is not "coding with autocomplete." It is a fundamental shift in
 | [Lab 3](labs/lab-03-multi-agent.md) | Multi-agent project orchestration |
 | [Lab 4](labs/lab-04-autonomous-pipeline.md) | Building an autonomous coding pipeline |
 | [Lab 5](labs/lab-05-onboard-unknown-project.md) | Onboarding an unknown project end-to-end |
+| [Lab 6](labs/lab-06-custom-commands-and-skills.md) | Custom commands, hooks & MCP skills |
 
 ## How to Use This Project
 
