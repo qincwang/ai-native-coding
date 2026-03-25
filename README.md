@@ -18,6 +18,7 @@ AI-native coding is not "coding with autocomplete." It is a fundamental shift in
 | [06](modules/06-onboarding-existing-projects.md) | **Onboarding Existing Projects** | How do I bring AI-native dev to messy, undocumented projects? |
 | [07](modules/07-engineering-edge-training.md) | **Engineering Edge Training** | How do I build the skills AI can't replace? |
 | [08](modules/08-systems-components-deep-dive.md) | **Systems Components Deep Dive** | How do the essential building blocks of modern systems actually work? |
+| [09](modules/09-craft-of-contribution.md) | **The Craft of Good Contributions** | What makes a PR valuable when AI can write code? |
 
 ## Practical Labs
 
